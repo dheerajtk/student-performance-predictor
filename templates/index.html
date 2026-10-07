@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Performance Predictor</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════ HEADER ════════════════════════════════════ -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-title">
+      <span class="header-icon">🎓</span>
+      <div>
+        <h1>Student Performance Predictor</h1>
+        <p class="header-sub">Predict final grade &amp; Pass/Fail using 5 inputs</p>
+      </div>
+    </div>
+    <div class="header-badge">UCI Dataset · 395 students · Math</div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════ MAIN LAYOUT ═══════════════════════════════ -->
+<main class="main-grid">
+
+  <!-- ─────────────────── LEFT: INPUT FORM ──────────────────────────────── -->
+  <section class="card form-card">
+    <h2 class="card-title">Enter Student Details</h2>
+    <p class="card-sub">All five fields are required.</p>
+
+    <form id="predict-form" novalidate>
+
+      <!-- Study Time -->
+      <div class="field-group">
+        <label for="studytime">
+          Study Time
+          <span class="field-hint">Weekly study hours category</span>
+        </label>
+        <select id="studytime" name="studytime" required>
+          <option value="" disabled selected>— select —</option>
+          <option value="1">&lt;2 hours / week</option>
+          <option value="2">2–5 hours / week</option>
+          <option value="3">5–10 hours / week</option>
+          <option value="4">&gt;10 hours / week</option>
+        </select>
+        <span class="field-error" id="err-studytime"></span>
+      </div>
+
+      <!-- Attendance -->
+      <div class="field-group">
+        <label for="attendance_pct">
+          Attendance %
+          <span class="field-hint">0 – 100  (derived from absences in dataset)</span>
+        </label>
+        <div class="input-row">
+          <input type="number" id="attendance_pct" name="attendance_pct"
+                 min="0" max="100" step="1" placeholder="e.g. 85" required />
+          <span class="input-unit">%</span>
+        </div>
+        <span class="field-error" id="err-attendance_pct"></span>
+      </div>
+
+      <!-- Previous Marks -->
+      <div class="field-group">
+        <label for="G1">
+          Previous Marks (G1)
+          <span class="field-hint">First-period grade, 0 – 20</span>
+        </label>
+        <div class="input-row">
+          <input type="number" id="G1" name="G1"
+                 min="0" max="20" step="1" placeholder="e.g. 12" required />
+          <span class="input-unit">/ 20</span>
+        </div>
+        <span class="field-error" id="err-G1"></span>
+      </div>
+
+      <!-- Previous Failures -->
+      <div class="field-group">
+        <label for="failures">
+          Previous Failures
+          <span class="field-hint">Number of past class failures, 0 – 4</span>
+        </label>
+        <input type="number" id="failures" name="failures"
+               min="0" max="4" step="1" placeholder="e.g. 0" required />
+        <span class="field-error" id="err-failures"></span>
+      </div>
+
+      <!-- Absences -->
+      <div class="field-group">
+        <label for="absences">
+          Absences
+          <span class="field-hint">Number of school absences, 0 – 93</span>
+        </label>
+        <input type="number" id="absences" name="absences"
+               min="0" max="93" step="1" placeholder="e.g. 6" required />
+        <span class="field-error" id="err-absences"></span>
+      </div>
+
+      <!-- Note on attendance derivation -->
+      <div class="info-note">
+        <strong>Note:</strong> The UCI dataset has no attendance column.
+        Attendance % is derived as <code>100 − absences × 2.5</code> (see README).
+        Both <em>Attendance %</em> and <em>Absences</em> are sent to the model.
+      </div>
+
+      <button type="submit" class="btn-predict" id="submit-btn">
+        <span id="btn-text">Predict Performance</span>
+        <span id="btn-spinner" class="spinner hidden"></span>
+      </button>
+
+      <button type="button" class="btn-reset" id="reset-btn">Reset</button>
+    </form>
+  </section>
+
+  <!-- ─────────────────── RIGHT: RESULTS ────────────────────────────────── -->
+  <section class="results-area" id="results-area">
+
+    <!-- Placeholder before first prediction -->
+    <div class="placeholder-card" id="placeholder">
+      <div class="placeholder-icon">📊</div>
+      <p>Fill in the form and click <strong>Predict Performance</strong> to see results.</p>
+    </div>
+
+    <!-- Error banner -->
+    <div class="error-banner hidden" id="error-banner">
+      <strong>Error:</strong>
+      <ul id="error-list"></ul>
+    </div>
+
+    <!-- ── Result summary card ── -->
+    <div class="card result-card hidden" id="result-card">
+
+      <div class="result-header">
+        <div class="grade-box" id="grade-box">
+          <span class="grade-number" id="grade-number">—</span>
+          <span class="grade-denom">/ 20</span>
+        </div>
+        <div class="verdict-box">
+          <span class="verdict-badge" id="verdict-badge">—</span>
+          <span class="grade-label-text" id="grade-label-text">—</span>
+          <span class="confidence-text" id="confidence-text">—</span>
+        </div>
+      </div>
+
+      <!-- Probability bar -->
+      <div class="prob-section">
+        <div class="prob-label-row">
+          <span class="prob-label fail-label">Fail</span>
+          <span class="prob-label pass-label">Pass</span>
+        </div>
+        <div class="prob-bar-track">
+          <div class="prob-bar-fill" id="prob-bar-fill"></div>
+          <div class="prob-bar-marker" id="prob-bar-marker"></div>
+        </div>
+        <div class="prob-pct-row">
+          <span id="fail-pct">—</span>
+          <span id="pass-pct">—</span>
+        </div>
+      </div>
+
+      <!-- Explanation bullets -->
+      <div class="explanation-section">
+        <h3>What drives this prediction?</h3>
+        <ul id="explanation-list" class="explanation-list"></ul>
+      </div>
+
+      <!-- Feature importance -->
+      <div class="importance-section">
+        <h3>Feature Importance</h3>
+        <div class="importance-tabs">
+          <button class="tab-btn active" data-tab="reg">Regression (G3)</button>
+          <button class="tab-btn" data-tab="clf">Classification (Pass/Fail)</button>
+        </div>
+        <div id="importance-reg" class="importance-bars tab-panel active"></div>
+        <div id="importance-clf" class="importance-bars tab-panel hidden"></div>
+      </div>
+
+      <!-- Model metrics -->
+      <div class="metrics-section">
+        <h3>Model Performance on Test Set</h3>
+        <div class="metrics-grid" id="metrics-grid"></div>
+      </div>
+
+    </div><!-- /result-card -->
+
+  </section><!-- /results-area -->
+</main><!-- /main-grid -->
+
+<!-- ═══════════════════════════ EDA PLOTS SECTION ════════════════════════ -->
+<section class="plots-section">
+  <div class="plots-inner">
+    <h2 class="section-title">Exploratory Data Analysis</h2>
+    <p class="section-sub">
+      Generated from the UCI Student Performance (Math) dataset.
+      Click any plot to enlarge.
+    </p>
+
+    <div class="plots-grid" id="plots-grid">
+      <!-- injected by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ LIGHTBOX ═════════════════════════════════ -->
+<div class="lightbox hidden" id="lightbox">
+  <button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+  <img class="lightbox-img" id="lightbox-img" src="" alt="EDA plot" />
+</div>
+
+<!-- ═══════════════════════════ FOOTER ══════════════════════════════════ -->
+<footer class="site-footer">
+  <p>
+    Dataset: <a href="https://archive.ics.uci.edu/dataset/320/student+performance"
+       target="_blank" rel="noopener">UCI Student Performance (Math)</a> ·
+    Models: Polynomial Ridge + Logistic Regression ·
+    Stack: Python · Flask · Scikit-learn
+  </p>
+</footer>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>

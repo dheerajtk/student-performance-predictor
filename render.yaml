@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: student-performance-predictor
+    runtime: python
+    buildCommand: "pip install -r requirements.txt && python -m src.train"
+    startCommand: "gunicorn app:app --workers 2 --timeout 120"
+    envVars:
+      - key: FLASK_DEBUG
+        value: "false"
+      - key: PYTHON_VERSION
+        value: "3.13.5"
+    plan: free

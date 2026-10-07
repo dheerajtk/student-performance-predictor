@@ -1,0 +1,78 @@
+{
+  "feature_cols": [
+    "studytime",
+    "attendance_pct",
+    "G1",
+    "failures",
+    "absences"
+  ],
+  "target_reg": "G3",
+  "target_clf": "pass_fail",
+  "pass_threshold": 10,
+  "best_regressor": {
+    "name": "Polynomial Ridge (degree=2)",
+    "metrics": {
+      "rmse": 2.7159,
+      "mae": 2.0245,
+      "r2": 0.6327,
+      "cv_r2": 0.5803,
+      "fit_time_s": 0.006
+    }
+  },
+  "best_classifier": {
+    "name": "Logistic Regression (C=1)",
+    "metrics": {
+      "accuracy": 0.8228,
+      "f1": 0.86,
+      "auc": 0.9046,
+      "cv_acc": 0.8576,
+      "fit_time_s": 0.015
+    }
+  },
+  "all_regression_results": {
+    "Linear Regression": {
+      "rmse": 2.8493,
+      "mae": 2.1416,
+      "r2": 0.5958,
+      "cv_r2": 0.6581,
+      "fit_time_s": 0.011
+    },
+    "Ridge Regression (L2)": {
+      "rmse": 2.8453,
+      "mae": 2.1328,
+      "r2": 0.5969,
+      "cv_r2": 0.6598,
+      "fit_time_s": 0.005
+    },
+    "Polynomial Ridge (degree=2)": {
+      "rmse": 2.7159,
+      "mae": 2.0245,
+      "r2": 0.6327,
+      "cv_r2": 0.5803,
+      "fit_time_s": 0.006
+    }
+  },
+  "all_classification_results": {
+    "Logistic Regression (C=1)": {
+      "accuracy": 0.8228,
+      "f1": 0.86,
+      "auc": 0.9046,
+      "cv_acc": 0.8576,
+      "fit_time_s": 0.015
+    },
+    "Logistic Regression (C=0.1)": {
+      "accuracy": 0.8228,
+      "f1": 0.8627,
+      "auc": 0.898,
+      "cv_acc": 0.8512,
+      "fit_time_s": 0.007
+    },
+    "Polynomial Logistic (deg=2)": {
+      "accuracy": 0.8354,
+      "f1": 0.8762,
+      "auc": 0.8973,
+      "cv_acc": 0.8385,
+      "fit_time_s": 0.017
+    }
+  }
+}

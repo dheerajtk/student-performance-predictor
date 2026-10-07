@@ -1,0 +1,51 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Portuguese version not needed
+data/student-por.csv
+
+# (pkl files are committed - they are tiny, <2KB each)
+
+# Keep metadata + plots
+!models/model_metadata.json
+!models/plots/
+!models/confusion_matrix.png
+!models/feature_importance_reg.png
+!models/feature_importance_clf.png
+
+# IDE / OS
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+*.tmp
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/*.ipynb
+
+# Test artefacts
+.pytest_cache/
+htmlcov/
+.coverage
+
+
